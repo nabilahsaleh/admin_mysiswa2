@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "admin-kad-mysiswa",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
