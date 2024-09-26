@@ -78,7 +78,7 @@ class _LoginWebPageState extends State<LoginWebPage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Sign In', style: TextStyle(color: Colors.white)),
+        title: const Text('Admin Kad MySiswa', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
       ),
       body: Center(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppointmentWebpage extends StatefulWidget {
   const AppointmentWebpage({super.key});
@@ -25,16 +26,15 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
       final timeSlot = bookingData['timeSlot'] ?? 'N/A';
 
       combinedData.add({
-        'name': bookingData['name'] ?? 'No Name', // Directly use name from booking
-        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number', // Directly use phone number
-        'dateTime': date, // Store the date as DateTime for sorting
+        'name': bookingData['name'] ?? 'No Name',
+        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
+        'dateTime': date,
         'dateTimeSlot': '$formattedDate\n$timeSlot',
         'status': bookingData['status'] ?? 'scheduled',
         'bookingId': doc.id,
       });
     }
 
-    // Sort the combinedData list by dateTime in ascending order
     combinedData.sort((a, b) => a['dateTime'].compareTo(b['dateTime']));
 
     return combinedData;
@@ -55,14 +55,14 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Confirm'),
               onPressed: () {
-                onConfirm(); // Execute the action
-                Navigator.of(context).pop(); // Close the dialog
+                onConfirm();
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -71,7 +71,7 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
     );
   }
 
-  void _cancelAppointment(String bookingId) async {
+  Future<void> _cancelAppointment(String bookingId, String phoneNumber) async {
     _showConfirmationDialog(
       context: context,
       action: 'cancel',
@@ -82,6 +82,9 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
               .doc(bookingId)
               .update({'status': 'canceled by admin'});
 
+          // Send a WhatsApp message
+          _sendWhatsAppMessage(phoneNumber);
+
           // Refresh the page after canceling
           setState(() {});
         } catch (e) {
@@ -89,6 +92,19 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
         }
       },
     );
+  }
+
+  Future<void> _sendWhatsAppMessage(String phoneNumber) async {
+    final formattedPhone = '6$phoneNumber'; 
+    final message = Uri.encodeComponent(
+        "Hello, your appointment has been canceled due to unforeseen circumstances. We apologize for any inconvenience this may cause. Please schedule a new appointment.");
+    final whatsappUrl = 'https://wa.me/$formattedPhone?text=$message';
+
+    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+      await launchUrl(Uri.parse(whatsappUrl));
+    } else {
+      print('Could not launch WhatsApp');
+    }
   }
 
   void _completeAppointment(String bookingId) async {
@@ -102,7 +118,6 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
               .doc(bookingId)
               .update({'status': 'completed'});
 
-          // Refresh the page after marking as completed
           setState(() {});
         } catch (e) {
           print('Error completing appointment: $e');
@@ -137,7 +152,7 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                 const SizedBox(height: 16),
                 Expanded(
                   child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: fetchBookingData(),  // Using simplified method
+                    future: fetchBookingData(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -262,7 +277,8 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                       children: [
                                         ElevatedButton(
                                           onPressed: () => _cancelAppointment(
-                                              bookingsData[index]['bookingId']),
+                                              bookingsData[index]['bookingId'],
+                                              bookingsData[index]['phone_number']),
                                           style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.red,
                                               shape: RoundedRectangleBorder(
