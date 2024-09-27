@@ -11,34 +11,45 @@ class AppointmentWebpage extends StatefulWidget {
 
 class _AppointmentWebpageState extends State<AppointmentWebpage> {
   Future<List<Map<String, dynamic>>> fetchBookingData() async {
-    List<Map<String, dynamic>> combinedData = [];
+  List<Map<String, dynamic>> combinedData = [];
 
-    QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
-        .collection('bookings')
-        .where('status', whereIn: ['scheduled', 'in-progress'])
-        .get();
+  QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
+      .collection('bookings')
+      .where('status', whereIn: ['scheduled', 'in-progress'])
+      .get();
 
-    for (var doc in bookingsSnapshot.docs) {
-      final bookingData = doc.data() as Map<String, dynamic>;
+  for (var doc in bookingsSnapshot.docs) {
+    final bookingData = doc.data() as Map<String, dynamic>;
 
-      final date = (bookingData['date'] as Timestamp).toDate();
-      final formattedDate = date.toLocal().toString().split(' ')[0];
-      final timeSlot = bookingData['timeSlot'] ?? 'N/A';
+    final date = (bookingData['date'] as Timestamp).toDate();
+    final now = DateTime.now(); // Current date and time
+    final formattedDate = date.toLocal().toString().split(' ')[0];
+    final timeSlot = bookingData['timeSlot'] ?? 'N/A';
 
-      combinedData.add({
-        'name': bookingData['name'] ?? 'No Name',
-        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
-        'dateTime': date,
-        'dateTimeSlot': '$formattedDate\n$timeSlot',
-        'status': bookingData['status'] ?? 'scheduled',
-        'bookingId': doc.id,
-      });
+    // Check if the appointment time has passed
+    if (date.isBefore(now) && bookingData['status'] == 'scheduled') {
+      // Update the status to 'missed' or 'no-show'
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(doc.id)
+          .update({'status': 'missed'});
     }
 
-    combinedData.sort((a, b) => a['dateTime'].compareTo(b['dateTime']));
-
-    return combinedData;
+    combinedData.add({
+      'name': bookingData['name'] ?? 'No Name',
+      'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
+      'dateTime': date,
+      'dateTimeSlot': '$formattedDate\n$timeSlot',
+      'status': bookingData['status'] ?? 'scheduled',
+      'bookingId': doc.id,
+    });
   }
+
+  combinedData.sort((a, b) => a['dateTime'].compareTo(b['dateTime']));
+
+  return combinedData;
+}
+
 
   void _showConfirmationDialog({
     required BuildContext context,

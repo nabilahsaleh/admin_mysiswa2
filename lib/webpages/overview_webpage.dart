@@ -20,7 +20,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
     int canceledCount = 0;
     int completedCount = 0;
     int scheduledCount = 0;
-    int inProgressCount = 0;
+    int missedCount = 0;
 
     QuerySnapshot bookingsSnapshot =
         await FirebaseFirestore.instance.collection('bookings').get();
@@ -35,19 +35,19 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
         completedCount++;
       } else if (status == 'scheduled') {
         scheduledCount++;
-      } else if (status == 'in-progress') {
-        inProgressCount++;
+      } else if (status == 'missed') {
+        missedCount++;
       }
     }
 
     int totalCount =
-        canceledCount + completedCount + scheduledCount + inProgressCount;
+        canceledCount + completedCount + scheduledCount + missedCount;
 
     return {
       'canceled': canceledCount,
       'completed': completedCount,
       'scheduled': scheduledCount,
-      'in-progress': inProgressCount,
+      'missed': missedCount,
       'total': totalCount,
     };
   }
@@ -80,7 +80,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
             final canceledCount = data['canceled'];
             final completedCount = data['completed'];
             final scheduledCount = data['scheduled'];
-            final inProgressCount = data['in-progress'];
+            final missedCount = data['missed'];
             final totalCount = data['total'];
 
             double canceledPercentage =
@@ -89,8 +89,8 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                 totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
             double scheduledPercentage =
                 totalCount > 0 ? (scheduledCount / totalCount) * 100 : 0;
-            double inProgressPercentage =
-                totalCount > 0 ? (inProgressCount / totalCount) * 100 : 0;
+            double missedPercentage =
+                totalCount > 0 ? (missedCount / totalCount) * 100 : 0;
 
             return LayoutBuilder(
               builder: (context, constraints) {
@@ -162,9 +162,9 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                         ),
                                         PieChartSectionData(
                                           color: Colors.orange,
-                                          value: inProgressPercentage,
+                                          value: missedPercentage,
                                           title:
-                                              'In-Progress\n${inProgressPercentage.toStringAsFixed(1)}%',
+                                              'Missed\n${missedPercentage.toStringAsFixed(1)}%',
                                           radius: 210,
                                           titleStyle: const TextStyle(
                                             fontSize: 14,
@@ -346,7 +346,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           const Text(
-                                            'In-Progress',
+                                            'Missed',
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -354,7 +354,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            '$inProgressCount',
+                                            '$missedCount',
                                             style: const TextStyle(
                                               fontSize:
                                                   24, // Larger number size
@@ -523,7 +523,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'In-Progress',
+                                      'Missed',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -531,7 +531,7 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      '$inProgressCount',
+                                      '$missedCount',
                                       style: const TextStyle(
                                         fontSize: 24, // Larger number size
                                         fontWeight: FontWeight.bold,

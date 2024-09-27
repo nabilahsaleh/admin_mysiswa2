@@ -12,7 +12,7 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
 
     QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
         .collection('bookings')
-        .where('status', whereIn: ['canceled', 'completed', 'canceled by admin'])
+        .where('status', whereIn: ['canceled', 'completed', 'canceled by admin', 'missed'])
         .get();
 
     for (var doc in bookingsSnapshot.docs) {
