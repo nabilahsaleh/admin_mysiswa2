@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppointmentWebpage extends StatefulWidget {
   const AppointmentWebpage({super.key});
@@ -11,45 +12,43 @@ class AppointmentWebpage extends StatefulWidget {
 
 class _AppointmentWebpageState extends State<AppointmentWebpage> {
   Future<List<Map<String, dynamic>>> fetchBookingData() async {
-  List<Map<String, dynamic>> combinedData = [];
+    List<Map<String, dynamic>> combinedData = [];
 
-  QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
-      .collection('bookings')
-      .where('status', whereIn: ['scheduled', 'in-progress'])
-      .get();
+    QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('status', whereIn: ['scheduled', 'in-progress']).get();
 
-  for (var doc in bookingsSnapshot.docs) {
-    final bookingData = doc.data() as Map<String, dynamic>;
+    for (var doc in bookingsSnapshot.docs) {
+      final bookingData = doc.data() as Map<String, dynamic>;
 
-    final date = (bookingData['date'] as Timestamp).toDate();
-    final now = DateTime.now(); // Current date and time
-    final formattedDate = date.toLocal().toString().split(' ')[0];
-    final timeSlot = bookingData['timeSlot'] ?? 'N/A';
+      final date = (bookingData['date'] as Timestamp).toDate();
+      final now = DateTime.now(); // Current date and time
+      final formattedDate = date.toLocal().toString().split(' ')[0];
+      final timeSlot = bookingData['timeSlot'] ?? 'N/A';
 
-    // Check if the appointment time has passed
-    if (date.isBefore(now) && bookingData['status'] == 'scheduled') {
-      // Update the status to 'missed' or 'no-show'
-      await FirebaseFirestore.instance
-          .collection('bookings')
-          .doc(doc.id)
-          .update({'status': 'missed'});
+      // Check if the appointment time has passed
+      if (date.isBefore(now) && bookingData['status'] == 'scheduled') {
+        // Update the status to 'missed' or 'no-show'
+        await FirebaseFirestore.instance
+            .collection('bookings')
+            .doc(doc.id)
+            .update({'status': 'missed'});
+      }
+
+      combinedData.add({
+        'name': bookingData['name'] ?? 'No Name',
+        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
+        'dateTime': date,
+        'dateTimeSlot': '$formattedDate\n$timeSlot',
+        'status': bookingData['status'] ?? 'scheduled',
+        'bookingId': doc.id,
+      });
     }
 
-    combinedData.add({
-      'name': bookingData['name'] ?? 'No Name',
-      'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
-      'dateTime': date,
-      'dateTimeSlot': '$formattedDate\n$timeSlot',
-      'status': bookingData['status'] ?? 'scheduled',
-      'bookingId': doc.id,
-    });
+    combinedData.sort((a, b) => a['dateTime'].compareTo(b['dateTime']));
+
+    return combinedData;
   }
-
-  combinedData.sort((a, b) => a['dateTime'].compareTo(b['dateTime']));
-
-  return combinedData;
-}
-
 
   void _showConfirmationDialog({
     required BuildContext context,
@@ -106,15 +105,25 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
   }
 
   Future<void> _sendWhatsAppMessage(String phoneNumber) async {
-    final formattedPhone = '6$phoneNumber'; 
+    final formattedPhone = '6$phoneNumber';
     final message = Uri.encodeComponent(
         "Hello, your appointment has been canceled due to unforeseen circumstances. We apologize for any inconvenience this may cause. Please schedule a new appointment.");
     final whatsappUrl = 'https://wa.me/$formattedPhone?text=$message';
 
-    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-      await launchUrl(Uri.parse(whatsappUrl));
+    if (kIsWeb) {
+      // For web platform
+      if (await canLaunch(whatsappUrl)) {
+        await launch(whatsappUrl);
+      } else {
+        print('Could not launch WhatsApp on Web');
+      }
     } else {
-      print('Could not launch WhatsApp');
+      // For mobile platforms
+      if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+        await launchUrl(Uri.parse(whatsappUrl));
+      } else {
+        print('Could not launch WhatsApp');
+      }
     }
   }
 
@@ -174,7 +183,8 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No Appointments Found'));
+                        return const Center(
+                            child: Text('No Appointments Found'));
                       }
 
                       List<Map<String, dynamic>> bookingsData = snapshot.data!;
@@ -259,7 +269,9 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                 ),
                               ],
                             ),
-                            for (int index = 0; index < bookingsData.length; index++)
+                            for (int index = 0;
+                                index < bookingsData.length;
+                                index++)
                               TableRow(
                                 children: [
                                   Padding(
@@ -272,11 +284,13 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
-                                    child: Text(bookingsData[index]['dateTimeSlot']),
+                                    child: Text(
+                                        bookingsData[index]['dateTimeSlot']),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
-                                    child: Text(bookingsData[index]['phone_number']),
+                                    child: Text(
+                                        bookingsData[index]['phone_number']),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
@@ -289,15 +303,18 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                         ElevatedButton(
                                           onPressed: () => _cancelAppointment(
                                               bookingsData[index]['bookingId'],
-                                              bookingsData[index]['phone_number']),
+                                              bookingsData[index]
+                                                  ['phone_number']),
                                           style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.red,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(4),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               )),
                                           child: const Text(
                                             'Cancel',
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                         const SizedBox(height: 10),
@@ -307,11 +324,13 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                           style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.green,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(4),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               )),
                                           child: const Text(
                                             'Completed',
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
