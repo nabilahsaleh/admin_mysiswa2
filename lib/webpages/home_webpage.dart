@@ -3,7 +3,6 @@ import 'package:admin_mysiswa2/webpages/history_webpage.dart';
 import 'package:admin_mysiswa2/webpages/login_webpage.dart';
 import 'package:admin_mysiswa2/webpages/overview_webpage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeWebPage extends StatefulWidget {
@@ -13,7 +12,6 @@ class HomeWebPage extends StatefulWidget {
 
 class _HomeWebPageState extends State<HomeWebPage> {
   int _selectedIndex = 0;
-  String? _username; // Variable to hold the username
 
   final List<Widget> _pages = [
     const AppointmentWebpage(),
@@ -24,25 +22,51 @@ class _HomeWebPageState extends State<HomeWebPage> {
   @override
   void initState() {
     super.initState();
-    _fetchUsername(); // Fetch the username on init
+    _checkAllAppointments(); // Check all appointments on init
   }
 
-  Future<void> _fetchUsername() async {
-    User? user = FirebaseAuth.instance.currentUser;
+// Method to check all appointments in the bookings collection
+  Future<void> _checkAllAppointments() async {
+    final now = DateTime.now();
 
-    if (user != null) {
-      String uid = user.uid;
+    print("Starting to check all appointments...");
+    print("Current Time (with timezone): $now (timezone: ${now.timeZoneName})");
 
-      DocumentSnapshot userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    QuerySnapshot bookingsSnapshot =
+        await FirebaseFirestore.instance.collection('bookings').get();
 
-      if (userDoc.exists) {
-        setState(() {
-          _username =
-              userDoc['username']; // Retrieve the username from Firestore
-        });
+    for (var doc in bookingsSnapshot.docs) {
+      DateTime endTime = (doc['endTime'] as Timestamp)
+          .toDate(); // Get the endTime from Firestore
+      String status = doc['status'];
+
+      print("Appointment ID: ${doc.id}");
+      print(
+          "End Time (with timezone): $endTime (timezone: ${endTime.timeZoneName})");
+      print("Current Status: $status");
+
+      // Check if the current time is after the end time
+      if (now.isAfter(endTime)) {
+        if (status == 'scheduled') {
+          // Update status to 'missed' only if the appointment is still 'scheduled'
+          print("Changing status of appointment ${doc.id} to 'missed'...");
+          await FirebaseFirestore.instance
+              .collection('bookings')
+              .doc(doc.id)
+              .update({
+            'status': 'missed',
+          });
+          print("Status changed to 'missed' for appointment ${doc.id}.");
+        } else {
+          print("Appointment ${doc.id} already has status: $status.");
+        }
+      } else {
+        print(
+            "Appointment ${doc.id} is still ongoing or scheduled for the future.");
       }
     }
+
+    print("Completed checking all appointments.");
   }
 
   void _onItemTapped(int index) {
@@ -52,7 +76,6 @@ class _HomeWebPageState extends State<HomeWebPage> {
   }
 
   void _logout() async {
-    await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
           builder: (context) =>
@@ -148,25 +171,7 @@ class _HomeWebPageState extends State<HomeWebPage> {
         if (constraints.maxWidth >= 800) {
           return Scaffold(
             appBar: AppBar(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (_username != null)
-                    Row(
-                      children: [
-                        Text(
-                          _username!,
-                          style: const TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Icon(Icons.person),
-                        const SizedBox(width: 30),
-                      ],
-                    ),
-                ],
-              ),
+              title: const Text('Home Page'),
             ),
             body: Row(
               children: [
@@ -183,25 +188,7 @@ class _HomeWebPageState extends State<HomeWebPage> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Home Page'),
-                  if (_username != null)
-                    Row(
-                      children: [
-                        Text(
-                          _username!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.person),
-                      ],
-                    ),
-                ],
-              ),
+              title: const Text('Home Page'),
             ),
             body: _pages[_selectedIndex],
             drawer: _buildDrawer(),

@@ -22,18 +22,8 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
       final bookingData = doc.data() as Map<String, dynamic>;
 
       final date = (bookingData['date'] as Timestamp).toDate();
-      final now = DateTime.now(); // Current date and time
       final formattedDate = date.toLocal().toString().split(' ')[0];
       final timeSlot = bookingData['timeSlot'] ?? 'N/A';
-
-      // Check if the appointment time has passed
-      if (date.isBefore(now) && bookingData['status'] == 'scheduled') {
-        // Update the status to 'missed' or 'no-show'
-        await FirebaseFirestore.instance
-            .collection('bookings')
-            .doc(doc.id)
-            .update({'status': 'missed'});
-      }
 
       combinedData.add({
         'name': bookingData['name'] ?? 'No Name',
