@@ -25,7 +25,7 @@ class _HomeWebPageState extends State<HomeWebPage> {
     _checkAllAppointments(); // Check all appointments on init
   }
 
-// Method to check all appointments in the bookings collection
+  // Method to check all appointments in the bookings collection
   Future<void> _checkAllAppointments() async {
     final now = DateTime.now();
 
@@ -36,13 +36,11 @@ class _HomeWebPageState extends State<HomeWebPage> {
         await FirebaseFirestore.instance.collection('bookings').get();
 
     for (var doc in bookingsSnapshot.docs) {
-      DateTime endTime = (doc['endTime'] as Timestamp)
-          .toDate(); // Get the endTime from Firestore
+      DateTime endTime = (doc['endTime'] as Timestamp).toDate(); // Get the endTime from Firestore
       String status = doc['status'];
 
       print("Appointment ID: ${doc.id}");
-      print(
-          "End Time (with timezone): $endTime (timezone: ${endTime.timeZoneName})");
+      print("End Time (with timezone): $endTime (timezone: ${endTime.timeZoneName})");
       print("Current Status: $status");
 
       // Check if the current time is after the end time
@@ -61,8 +59,7 @@ class _HomeWebPageState extends State<HomeWebPage> {
           print("Appointment ${doc.id} already has status: $status.");
         }
       } else {
-        print(
-            "Appointment ${doc.id} is still ongoing or scheduled for the future.");
+        print("Appointment ${doc.id} is still ongoing or scheduled for the future.");
       }
     }
 
