@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:html' as html;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,39 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
+
+// Request notification permissions in your main.dart
+FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+void requestNotificationPermission() async {
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+    provisional: false,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+  }
+}
+
+void setupFirebaseMessaging() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message while in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
+}
+
+
 void checkNotificationPermission() {
   if (html.Notification.permission == "granted") {
     print("Notifications are already permitted.");
@@ -43,7 +77,7 @@ void checkNotificationPermission() {
 
 void showNotification(String title, String body) {
   if (html.Notification.permission == "granted") {
-    html.Notification(title, body: body, icon: 'assets/notification_icon.png');
+    html.Notification(title, body: body, icon: 'assets/notification.png');
   } else {
     print("Notifications are not permitted.");
   }
