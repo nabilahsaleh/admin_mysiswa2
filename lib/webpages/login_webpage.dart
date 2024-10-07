@@ -12,6 +12,16 @@ class LoginWebPage extends StatefulWidget {
 
 class _LoginWebPageState extends State<LoginWebPage> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
+  final List<String> allowedEmails = [
+    'itraub@uitm.edu.my',
+    'user2@example.com',
+    'user3@example.com',
+    'user4@example.com',
+    'user5@example.com',
+    'user6@example.com',
+    'user7@example.com',
+  ];
 
   // Sign in with Google method
   Future<void> signInWithGoogle() async {
@@ -25,8 +35,8 @@ class _LoginWebPageState extends State<LoginWebPage> {
         return;
       }
 
-      // Check if the email ends with '@student.kptm.edu.my' before proceeding
-      if (googleUser.email.endsWith('@student.kptm.edu.my')) {
+      // Check if the email is in the allowed list
+      if (allowedEmails.contains(googleUser.email)) {
         // Obtain the authentication details from the Google account
         GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
@@ -47,18 +57,16 @@ class _LoginWebPageState extends State<LoginWebPage> {
           // Navigate to the next screen
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    HomeWebPage()), // Replace with your next page
+            MaterialPageRoute(builder: (context) => HomeWebPage()), // Replace with your next page
           );
         } else {
           print('Google Sign-In failed: No user found');
         }
       } else {
-        // Email does not match the allowed domain
+        // Email is not in the allowed list
         await _googleSignIn.signOut();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Use your uitm email')),
+          SnackBar(content: Text('This email is not allowed to sign up.')),
         );
       }
     } catch (e) {
