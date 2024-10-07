@@ -15,7 +15,7 @@ class _LoginWebPageState extends State<LoginWebPage> {
   
   final List<String> allowedEmails = [
     'itraub@uitm.edu.my',
-    'user2@example.com',
+    'user1@example.com',
     'user3@example.com',
     'user4@example.com',
     'user5@example.com',
