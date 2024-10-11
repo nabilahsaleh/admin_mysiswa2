@@ -23,13 +23,16 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
 
       final date = (bookingData['date'] as Timestamp).toDate();
       final formattedDate = date.toLocal().toString().split(' ')[0];
-      final timeSlot = bookingData['timeSlot'] ?? 'N/A';
+      final timeSlot = bookingData['time'] ?? 'N/A';
 
       combinedData.add({
         'name': bookingData['name'] ?? 'No Name',
+        'studentId': bookingData['studentId'] ?? 'No ID',
+        'faculty': bookingData['faculty'] ?? 'No Faculty',
         'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
         'dateTime': date,
         'dateTimeSlot': '$formattedDate\n$timeSlot',
+        'purpose': bookingData['purpose'] ?? 'No Purpose',
         'status': bookingData['status'] ?? 'scheduled',
         'bookingId': doc.id,
       });
@@ -189,6 +192,9 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                             3: FlexColumnWidth(),
                             4: FlexColumnWidth(),
                             5: FlexColumnWidth(),
+                            6: FlexColumnWidth(),
+                            7: FlexColumnWidth(),
+                            8: FlexColumnWidth(),
                           },
                           border: TableBorder.all(color: Colors.grey, width: 1),
                           children: [
@@ -220,7 +226,17 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
-                                    'DATE & TIME',
+                                    'STUDENT ID',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'FACULTY',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -231,6 +247,26 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'PHONE NUMBER',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'DATE & TIME',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'PURPOSE',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -274,13 +310,28 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
-                                    child: Text(
-                                        bookingsData[index]['dateTimeSlot']),
+                                    child: Text(bookingsData[index]
+                                        ['studentId']), // Student ID
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(bookingsData[index]
+                                        ['faculty']), // Faculty
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: Text(
                                         bookingsData[index]['phone_number']),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(
+                                        bookingsData[index]['dateTimeSlot']),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(bookingsData[index]
+                                        ['purpose']), // Purpose
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),

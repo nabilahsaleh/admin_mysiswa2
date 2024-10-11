@@ -12,20 +12,27 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
 
     QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
         .collection('bookings')
-        .where('status', whereIn: ['canceled', 'completed', 'canceled by admin', 'missed'])
-        .get();
+        .where('status', whereIn: [
+      'canceled',
+      'completed',
+      'canceled by admin',
+      'missed'
+    ]).get();
 
     for (var doc in bookingsSnapshot.docs) {
       final bookingData = doc.data() as Map<String, dynamic>;
 
       final date = (bookingData['date'] as Timestamp).toDate();
       final formattedDate = date.toLocal().toString().split(' ')[0];
-      final timeSlot = bookingData['timeSlot'] ?? 'N/A';
+      final timeSlot = bookingData['time'] ?? 'N/A';
 
       historyData.add({
-        'name': bookingData['name'] ?? 'No Name',  // Directly get name from booking data
-        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',  // Directly get phone number
-        'dateTime': date,  // Store the date as DateTime for sorting
+        'name': bookingData['name'] ?? 'No Name',
+        'phone_number': bookingData['phoneNumber'] ?? 'No Phone Number',
+        'studentId': bookingData['studentId'] ?? 'No Student ID',
+        'faculty': bookingData['faculty'] ?? 'No Faculty',
+        'purpose': bookingData['purpose'] ?? 'No Purpose',
+        'dateTime': date,
         'dateTimeSlot': '$formattedDate\n$timeSlot',
         'status': bookingData['status'],
         'bookingId': doc.id,
@@ -89,6 +96,9 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                             2: FlexColumnWidth(2),
                             3: FlexColumnWidth(2),
                             4: FlexColumnWidth(2),
+                            5: FlexColumnWidth(2), // New column width for student ID
+                            6: FlexColumnWidth(2), // New column width for faculty
+                            7: FlexColumnWidth(2), // New column width for purpose
                           },
                           border: TableBorder.all(color: Colors.grey, width: 1),
                           children: [
@@ -100,7 +110,7 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Text(
-                                    'No.',
+                                    'NO.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -120,7 +130,17 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Text(
-                                    'DATE & TIME',
+                                    'STUDENT ID',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text(
+                                    'FACULTY',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -140,6 +160,26 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Text(
+                                    'DATE & TIME',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text(
+                                    'PURPOSE',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text(
                                     'STATUS',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -149,7 +189,9 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                                 ),
                               ],
                             ),
-                            for (int index = 0; index < historyData.length; index++)
+                            for (int index = 0;
+                                index < historyData.length;
+                                index++)
                               TableRow(
                                 children: [
                                   Padding(
@@ -163,13 +205,28 @@ class _HistoryWebpageState extends State<HistoryWebpage> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                        historyData[index]['dateTimeSlot']),
+                                    child: Text(historyData[index]
+                                        ['studentId']), // Display student ID
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(historyData[index]
+                                        ['faculty']), // Display faculty
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
                                         historyData[index]['phone_number']),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                        historyData[index]['dateTimeSlot']),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(historyData[index]
+                                        ['purpose']), // Display purpose
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
