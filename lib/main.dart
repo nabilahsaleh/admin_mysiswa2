@@ -1,5 +1,4 @@
 import 'package:admin_mysiswa2/webpages/login_webpage.dart';
-import 'package:admin_mysiswa2/webpages/report_generator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -128,7 +127,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AdminReportPage(),
+      home: LoginWebPage(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -119,50 +119,49 @@ class _AdminReportPageState extends State<AdminReportPage> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Appointment Report',
+              pw.Text('MySiswa Card Appointment Report',
                   style: pw.TextStyle(
                       fontSize: 15, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
               pw.Text(
                   'From: ${_formatDate(_fromDate)}  To: ${_formatDate(_toDate)}',
-                  style: pw.TextStyle(fontSize: 12)),
+                  style: const pw.TextStyle(fontSize: 12)),
               pw.SizedBox(height: 20),
               pw.Table.fromTextArray(
                 headers: [
-                  pw.Text('NO',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('NAME',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('STUDENT ID',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('FACULTY',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('DATE',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('PURPOSE',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
-                  pw.Text('STATUS',
-                      style: pw.TextStyle(fontSize: 10)), // Change size here
+                  pw.Text('NO', style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text('NAME', style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text('STUDENT ID', style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text('DATE', style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text('PURPOSE', style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text('STATUS', style: const pw.TextStyle(fontSize: 9)),
                 ],
                 data: _appointments.asMap().entries.map((entry) {
                   int index = entry.key; // Get index
                   var appointment = entry.value; // Get the appointment
                   return [
-                    pw.Text((index + 1).toString(), style: pw.TextStyle(fontSize: 9)), // Row number
+                    pw.Text((index + 1).toString(),
+                        style: const pw.TextStyle(fontSize: 9)), // Row number
                     pw.Text(appointment['name'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
+                        style: const pw.TextStyle(fontSize: 9)),
                     pw.Text(appointment['studentId'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
-                    pw.Text(appointment['faculty'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
+                        style: const pw.TextStyle(fontSize: 9)),
                     pw.Text(appointment['date'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
+                        style: const pw.TextStyle(fontSize: 9)),
                     pw.Text(appointment['purpose'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
+                        style: const pw.TextStyle(fontSize: 9)),
                     pw.Text(appointment['status'],
-                        style: pw.TextStyle(fontSize: 9)), // Change size here
+                        style: const pw.TextStyle(fontSize: 9)),
                   ];
                 }).toList(),
+                columnWidths: {
+                  0: const pw.FixedColumnWidth(30), // NO column fixed width
+                  1: const pw.FixedColumnWidth(150), // NAME column fixed width
+                  2: const pw.FixedColumnWidth(70),  // STUDENT ID fixed width
+                  3: const pw.FixedColumnWidth(50),  // DATE fixed width
+                  4: const pw.FixedColumnWidth(70), // PURPOSE fixed width
+                  5: const pw.FixedColumnWidth(60),  // STATUS fixed width
+                },
               ),
             ],
           );
@@ -189,8 +188,7 @@ class _AdminReportPageState extends State<AdminReportPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Report Generation'),
-        backgroundColor: Colors.blueGrey,
+        title: const Text(''),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -224,40 +222,41 @@ class _AdminReportPageState extends State<AdminReportPage> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: Colors.black,
                   ),
                   child: const Text('Generate PDF',
-                      style: TextStyle(fontSize: 16)),
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             // Data Table
             _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(label: Text('Name')),
-                          DataColumn(label: Text('Student ID')),
-                          DataColumn(label: Text('Faculty')),
-                          DataColumn(label: Text('Date')),
-                          DataColumn(label: Text('Purpose')),
-                          DataColumn(label: Text('Status')),
-                        ],
-                        rows: _appointments.map((appointment) {
-                          return DataRow(cells: [
-                            DataCell(Text(appointment['name'])),
-                            DataCell(Text(appointment['studentId'])),
-                            DataCell(Text(appointment['faculty'])),
-                            DataCell(Text(appointment['date'])),
-                            DataCell(Text(appointment['purpose'])),
-                            DataCell(Text(appointment['status'])),
-                          ]);
-                        }).toList(),
+                    child: Align(
+                      alignment: Alignment.topCenter, // Align to top center
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text('NAME', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('STUDENT ID', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('DATE', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('PURPOSE', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('STATUS', style: TextStyle(fontWeight: FontWeight.bold))),
+                          ],
+                          rows: _appointments.map((appointment) {
+                            return DataRow(cells: [
+                              DataCell(Text(appointment['name'])),
+                              DataCell(Text(appointment['studentId'])),
+                              DataCell(Text(appointment['date'])),
+                              DataCell(Text(appointment['purpose'])),
+                              DataCell(Text(appointment['status'])),
+                            ]);
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),

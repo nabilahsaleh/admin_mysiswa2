@@ -1,3 +1,4 @@
+import 'package:admin_mysiswa2/webpages/report_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -365,6 +366,43 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                       ),
                                     ),
                                   ),
+                                  Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const AdminReportPage()),
+                                          );
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.picture_as_pdf,
+                                                  size: 28,
+                                                  color: Colors.black),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                'Details Report',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -542,6 +580,45 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      // Button below the card views
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AdminReportPage()),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.picture_as_pdf,
+                                      size: 28, color: Colors.blueGrey),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Go to Admin Report Page',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blueGrey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],

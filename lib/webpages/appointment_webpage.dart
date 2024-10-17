@@ -98,9 +98,11 @@ class _AppointmentWebpageState extends State<AppointmentWebpage> {
   }
 
   Future<void> _sendWhatsAppMessage(String phoneNumber) async {
-    final formattedPhone = '6$phoneNumber';
+    final formattedPhone = '6$phoneNumber'; // Ensure this is correct
     final message = Uri.encodeComponent(
-        "Hello, your appointment has been canceled due to unforeseen circumstances. We apologize for any inconvenience this may cause. Please schedule a new appointment.");
+        "Hello, your appointment has been canceled due to unforeseen circumstances. "
+        "We apologize for any inconvenience this may cause. "
+        "Please schedule a new appointment.");
     final whatsappUrl = 'https://wa.me/$formattedPhone?text=$message';
 
     if (kIsWeb) {
