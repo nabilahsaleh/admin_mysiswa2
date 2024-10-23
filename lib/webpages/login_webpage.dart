@@ -15,12 +15,12 @@ class _LoginWebPageState extends State<LoginWebPage> {
   
   final List<String> allowedEmails = [
     'itraub@uitm.edu.my',
-    'user1@example.com',
-    'user3@example.com',
-    'user4@example.com',
-    'user5@example.com',
-    'user6@example.com',
-    'user7@example.com',
+    'hazrin@uitm.edu.my',
+    'noorasikin863@uitm.edu.my',
+    'rosmaria_saad@uitm.edu.my',
+    'zainudin79@uitm.edu.my',
+    'azriyusoff@uitm.edu.my',
+    'jefryzan137@uitm.edu.my',
   ];
 
   // Sign in with Google method
