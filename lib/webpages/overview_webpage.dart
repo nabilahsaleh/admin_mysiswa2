@@ -1,3 +1,4 @@
+import 'package:admin_mysiswa2/webpages/bar_chart.dart';
 import 'package:admin_mysiswa2/webpages/report_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -386,14 +387,51 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
+                                              Text(
+                                                'Download',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(width: 10),
                                               Icon(Icons.picture_as_pdf,
+                                                  size: 28,
+                                                  color: Colors.black),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ),
+                                  Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SimpleBarChart()),
+                                          );
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.bar_chart,
                                                   size: 28,
                                                   color: Colors.black),
                                               SizedBox(width: 10),
                                               Text(
-                                                'Details Report',
+                                                'Bar Chart',
                                                 style: TextStyle(
-                                                  fontSize: 16,
+                                                  fontSize: 18,
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -605,13 +643,51 @@ class _OverviewWebpageState extends State<OverviewWebpage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.picture_as_pdf,
-                                      size: 28, color: Colors.blueGrey),
+                                      size: 28, color: Colors.black),
                                   SizedBox(width: 10),
                                   Text(
-                                    'Go to Admin Report Page',
+                                    'Details Report',
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blueGrey,
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        SimpleBarChart()),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.bar_chart,
+                                      size: 28, color: Colors.black),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Bar Chart',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
